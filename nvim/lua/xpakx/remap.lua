@@ -7,3 +7,6 @@ vim.keymap.set("n", "<M-k>", ':wincmd k<CR>')
 vim.keymap.set("n", "<M-j>", ':wincmd j<CR>')
 vim.keymap.set("n", "<M-h>", ':wincmd h<CR>')
 vim.keymap.set("n", "<M-l>", ':wincmd l<CR>')
+
+vim.keymap.set("n", "[q", ':cp!<cr>')
+vim.keymap.set("n", "]q", ':cn!<cr>')
