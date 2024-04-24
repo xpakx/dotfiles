@@ -1,0 +1,10 @@
+set relativenumber number
+set ideamarks
+let mapleader=" "
+map <leader>lr <Action>(RenameElement)
+map <leader>pf <Action>(SearchEverywhere)
+map <leader>pg <Action>(FindInPath)
+map <leader>pv <Action>(OpenFile)
+
+map [d <Action>(GoToPreviousError)
+map ]d <Action>(GoToNextError)
