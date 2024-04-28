@@ -16,3 +16,14 @@ nnoremap <leader>fc :action ToggleDistractionFreeMode<CR>
 
 map <leader>K <Action>(EditorContextInfo)
 map <leader>lc <Action>(Refactorings.QuickListPopupAction)
+
+" debugging
+nmap <leader>dc <Action>(ContextDebug)
+nmap <leader>dd <Action>(Debug)
+nmap <leader>dm <Action>(ToggleLineBreakpoint)
+
+" testing
+nmap <leader>rc <Action>(RunClass)
+nmap <leader>ra <Action>(Rerun)
+nmap <leader>ru <Action>(RerunFailedTests)
+nmap <leader>rr <Action>(ContextRun)
