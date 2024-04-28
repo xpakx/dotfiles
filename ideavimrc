@@ -8,3 +8,11 @@ map <leader>pv <Action>(OpenFile)
 
 map [d <Action>(GoToPreviousError)
 map ]d <Action>(GoToNextError)
+
+map <leader>u <Action>(LocalHistory.ShowHistory)
+
+nnoremap <leader>rr :source ~/.ideavimrc<CR>
+nnoremap <leader>fc :action ToggleDistractionFreeMode<CR>
+
+map <leader>K <Action>(EditorContextInfo)
+map <leader>lc <Action>(Refactorings.QuickListPopupAction)
