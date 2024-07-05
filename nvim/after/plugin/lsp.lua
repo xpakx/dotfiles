@@ -4,7 +4,8 @@ lsp.ensure_installed({
 	'pylsp',
 	'rust_analyzer',
 	'gopls',
-	'ocamllsp'
+	'ocamllsp',
+	'tsserver'
 })
 
 local cmp = require('cmp')
