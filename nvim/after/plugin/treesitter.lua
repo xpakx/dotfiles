@@ -1,5 +1,5 @@
 require'nvim-treesitter.configs'.setup {
-	ensure_installed = { "vimdoc", "java", "javascript", "typescript", "c", "lua", "rust", "python" },
+	ensure_installed = { "vimdoc", "java", "javascript", "typescript", "c", "lua", "rust", "python", "wgsl" },
 	sync_install = false,
 	auto_install = true,
 	highlight = {
@@ -8,3 +8,9 @@ require'nvim-treesitter.configs'.setup {
 	}
 
 }
+
+vim.filetype.add({
+    pattern = {
+      ['.*%.wgsl'] = 'wgsl',
+    },
+})
