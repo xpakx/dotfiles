@@ -1,0 +1,45 @@
+#!/usr/bin/env fish
+
+set TVDIR "$HOME/Videos/TV Series"
+set MVDIR "$HOME/Videos/Movies"
+set YTDIR "$HOME/Videos/Youtube"
+
+function get_videos
+    find $argv -type f \( -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.avi" -o -iname "*.mov" -o -iname "*.mpg" -o -iname "*.mpeg" -o -iname "*.wmv" -o -iname "*.flv" -o -iname "*.ogg" -o -iname "*.webm" -o -iname "*.m4v" -o -iname "*.3gp" \)
+end
+
+if [ "$argv[1]" = "movie" ]
+	set MOVIE (ls "$MVDIR" | fzf)
+	set FILE (get_videos "$MVDIR/$MOVIE" | head -n 1)
+	mpv "$FILE" --fs
+else if [ "$argv[1]" = "yt" ]
+	set FILE (get_videos "$YTDIR" | fzf)
+	mpv "$FILE" --fs
+else if [ "$argv[1]" = "tv" ]
+	set MOVIE_DIR (ls "$TVDIR" | fzf)
+	set MOVIE_FILES (get_videos  "$TVDIR/$MOVIE_DIR" -maxdepth 1 | sort -V)
+	if [ "$MOVIE_FILES" = "" ]
+		echo $MOVIE_FILES
+		set SEASON (ls "$TVDIR/$MOVIE_DIR" | fzf)
+		mpv "$TVDIR/$MOVIE_DIR/$SEASON" --fs
+	else
+		mpv "$TVDIR/$MOVIE_DIR" --fs
+	end
+else if [ "$argv[1]" = "album" ]
+	set FILE (
+	beet ls -af '$albumartist - $album ($year) $path' | fzf --delimiter=" " --with-nth=1 | awk -v home="$HOME/Music/" -F' ' '{print $2}'
+	)
+	set ALBUMEXISTS $(echo $FILE | grep "No matches")
+	echo $FILE
+	if [ "$ALBUMEXISTS" = "" ]
+		set FILE $(echo $FILE | awk -v home="$HOME/Music/" '{gsub(home, ""); print}')
+		echo $FILE
+		mpc clear
+		mpc add "$FILE"
+		mpc play
+	else
+		echo 'No such album!'
+	end
+else
+	echo 'No command!'
+end
