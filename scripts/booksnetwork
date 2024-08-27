@@ -3,29 +3,35 @@ from bs4 import BeautifulSoup as bs
 import requests
 import json
 import shutil
+import argparse
+import feedparser
 
-URL = "https://newbooksnetwork.com/political-beliefs-2"
+FEED = "https://feeds.megaphone.fm/LIT4543917034"
 
 
 def get_data(url):
-    page = requests.get(url)
+    if url.startswith("http"):
+        page = requests.get(url)
 
-    soup = bs(page.content, "html.parser")
-    frame = soup.select_one('iframe[src*="megaphone"]')
+        soup = bs(page.content, "html.parser")
+        frame = soup.select_one('iframe[src*="megaphone"]')
 
-    if frame is None:
-        raise Exception("No iframe found")
+        if frame is None:
+            raise Exception("No iframe found")
 
-    src = frame['src']
-    if src is None:
-        raise Exception("No src.")
+        src = frame['src']
+        if src is None:
+            raise Exception("No src.")
 
-    print(frame['src'])
-    if '=' not in frame['src']:
-        raise Exception("Url corrupted.")
+        print(frame['src'])
+        if '=' not in frame['src']:
+            raise Exception("Url corrupted.")
 
-    id = frame['src'].split('=')[1]
-    print(id)
+        id = frame['src'].split('=')[1]
+        print(id)
+    else:
+        id = url
+    
 
     url = "https://player.megaphone.fm/playlist/episode/{id}".format(id=id)
     resp = requests.get(url)
@@ -46,9 +52,37 @@ def save_audio(url, name):
         with open(name, 'wb') as f:
             shutil.copyfileobj(r.raw, f)
 
+def get(url):
+    data = get_data(url)
+    local_filename = data['title'] + ".mp3"
+    save_audio(data['audio'], local_filename)
 
-data = get_data(URL)
-print(data)
+def ls():
+    rss = feedparser.parse(FEED)
+    for entry in rss.entries:
+        print(entry.title)
+        if 'enclosures' in entry:
+                for enclosure in entry.enclosures:
+                    url = enclosure.get('url')
+                    id = url.split('/')[-1].split('.')[0]
+                    print("ID:", id)
 
-local_filename = data['title'] + ".mp3"
-save_audio(data['audio'], local_filename)
+
+def main():
+    parser = argparse.ArgumentParser(description="New Books Network")
+    subparsers = parser.add_subparsers(dest='command')
+    get_parser = subparsers.add_parser('get', help='get podcast')
+    get_parser.add_argument('url', help='Url or id of the episode')
+
+    ls_parser = subparsers.add_parser('ls', help='list new podcasts')
+
+    args = parser.parse_args()
+
+    if args.command == "get":
+        get(args.url)
+    elif args.command == "ls":
+        ls()
+
+
+if __name__ == "__main__":
+    main()
