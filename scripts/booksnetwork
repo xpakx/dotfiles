@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+from bs4 import BeautifulSoup as bs
+import requests
+import json
+import shutil
+
+URL = "https://newbooksnetwork.com/political-beliefs-2"
+
+
+def get_data(url):
+    page = requests.get(url)
+
+    soup = bs(page.content, "html.parser")
+    frame = soup.select_one('iframe[src*="megaphone"]')
+
+    if frame is None:
+        raise Exception("No iframe found")
+
+    src = frame['src']
+    if src is None:
+        raise Exception("No src.")
+
+    print(frame['src'])
+    if '=' not in frame['src']:
+        raise Exception("Url corrupted.")
+
+    id = frame['src'].split('=')[1]
+    print(id)
+
+    url = "https://player.megaphone.fm/playlist/episode/{id}".format(id=id)
+    resp = requests.get(url)
+    data = json.loads(resp.text)
+
+    return {
+            "audio": data['episodes'][0]['audioUrl'],
+            "pubDate": data['episodes'][0]['pubDate'],
+            "title": data['episodes'][0]['title'],
+            "subtitle": data['episodes'][0]['subtitle'],
+            "summary": data['episodes'][0]['summary'],
+            "podcastTitle": data['podcastTitle'],
+    }
+
+
+def save_audio(url, name):
+    with requests.get(url, stream=True) as r:
+        with open(name, 'wb') as f:
+            shutil.copyfileobj(r.raw, f)
+
+
+data = get_data(URL)
+print(data)
+
+local_filename = data['title'] + ".mp3"
+save_audio(data['audio'], local_filename)
