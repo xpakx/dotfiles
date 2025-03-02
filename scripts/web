@@ -1,0 +1,4 @@
+#!/usr/bin/env fish
+
+curl -s (wl-paste) > $argv[1].html
+pandoc --output $argv[1].md -t gfm-raw_html $argv[1].html
