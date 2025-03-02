@@ -9,6 +9,8 @@ M.run_script_for_webpage = function(selected_webpage)
 	if selected_webpage then
 		if selected_webpage == M.webpages[1] then
 			M.get_hackernews()
+		elseif selected_webpage == M.webpages[2] then
+			M.get_reddit("AcademicBiblical")
 		end
 	else
 		print("No webpage selected or operation cancelled.")
@@ -44,6 +46,16 @@ M.get_hackernews = function()
 	local script_path = vim.fn.stdpath('config') .. '/python/hackernews.py'
 	local file_name = "hr.md"
 	local command = string.format('python3 %s > %s', script_path, file_name)
+	os.execute(command)
+
+	vim.cmd('edit ' .. file_name)
+end
+
+M.get_reddit = function(sub_name)
+	-- Call the Python script
+	local script_path = vim.fn.stdpath('config') .. '/python/reddit.py'
+	local file_name = string.format("%s.md", sub_name)
+	local command = string.format('python3 %s %s > %s', script_path, sub_name, file_name)
 	os.execute(command)
 
 	vim.cmd('edit ' .. file_name)
