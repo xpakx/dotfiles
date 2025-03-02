@@ -11,5 +11,7 @@ return {
 			builtin.grep_string({ search = vim.fn.input("Grep > ")})
 		end)
 		vim.keymap.set("n", "<leader>pq", builtin.quickfix, {} )
+
+		vim.api.nvim_set_keymap('n', '<leader>rl', '<cmd>lua require("xpakx.get_posts").select_webpage_and_run_script()<CR>', { noremap = true, silent = true })
 	end,
 }
