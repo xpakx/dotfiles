@@ -2,7 +2,9 @@ local M = {}
 
 M.webpages = {
 	"Hacker News",
-	"r/AcademicBiblical"
+	"r/AcademicBiblical",
+	"Alberto Acerbi",
+	"Rob Sica"
 }
 
 M.run_script_for_webpage = function(selected_webpage)
@@ -11,6 +13,10 @@ M.run_script_for_webpage = function(selected_webpage)
 			M.get_hackernews()
 		elseif selected_webpage == M.webpages[2] then
 			M.get_reddit("AcademicBiblical")
+		elseif selected_webpage == M.webpages[3] then
+			M.get_bluesky("acerbialberto", "did:plc:7rr5pfsh3l4b5qv64h47za4a")
+		elseif selected_webpage == M.webpages[4] then
+			M.get_bluesky("robsica", "did:plc:dlzbs4cykjmqphsmurq6h53t")
 		end
 	else
 		print("No webpage selected or operation cancelled.")
@@ -58,6 +64,14 @@ M.get_reddit = function(sub_name)
 	local command = string.format('python3 %s %s > %s', script_path, sub_name, file_name)
 	os.execute(command)
 
+	vim.cmd('edit ' .. file_name)
+end
+
+M.get_bluesky = function(name, did)
+	local script_path = vim.fn.stdpath('config') .. '/python/bluesky.py'
+	local file_name = string.format("%s.md", name)
+	local command = string.format('python3 %s %s > %s', script_path, did, file_name)
+	os.execute(command)
 	vim.cmd('edit ' .. file_name)
 end
 
