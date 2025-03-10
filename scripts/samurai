@@ -10,35 +10,58 @@ end
 
 if [ "$argv[1]" = "movie" ]
 	set MOVIE (ls "$MVDIR" | fzf)
-	set FILE (get_videos "$MVDIR/$MOVIE" | head -n 1)
-	mpv "$FILE" --fs
+
+	if test -n "$MOVIE"
+		set FILE (get_videos "$MVDIR/$MOVIE" | head -n 1)
+		mpv "$FILE" --fs
+	else
+		echo "No movie selected."
+	end
 else if [ "$argv[1]" = "yt" ]
 	set FILE (get_videos "$YTDIR" | fzf)
-	mpv "$FILE" --fs
+
+	if test -n "$FILE"
+		mpv "$FILE" --fs
+	else
+		echo "No video selected."
+	end
 else if [ "$argv[1]" = "tv" ]
 	set MOVIE_DIR (ls "$TVDIR" | fzf)
-	set MOVIE_FILES (get_videos  "$TVDIR/$MOVIE_DIR" -maxdepth 1 | sort -V)
-	if [ "$MOVIE_FILES" = "" ]
-		echo $MOVIE_FILES
-		set SEASON (ls "$TVDIR/$MOVIE_DIR" | fzf)
-		mpv "$TVDIR/$MOVIE_DIR/$SEASON" --fs
+	if test -n "$MOVIE_DIR"
+		set MOVIE_FILES (get_videos  "$TVDIR/$MOVIE_DIR" -maxdepth 1 | sort -V)
+		if [ "$MOVIE_FILES" = "" ]
+			echo $MOVIE_FILES
+			set SEASON (ls "$TVDIR/$MOVIE_DIR" | fzf)
+			if test -n "$SEASON"
+				mpv "$TVDIR/$MOVIE_DIR/$SEASON" --fs
+
+			else
+				echo "No season selected."
+			end
+		else
+			mpv "$TVDIR/$MOVIE_DIR" --fs
+		end
 	else
-		mpv "$TVDIR/$MOVIE_DIR" --fs
+		echo "No series selected."
 	end
 else if [ "$argv[1]" = "album" ]
 	set FILE (
 	beet ls -af '$albumartist - $album ($year) $path' | fzf --delimiter=" " --with-nth=1 | awk -v home="$HOME/Music/" -F' ' '{print $2}'
 	)
-	set ALBUMEXISTS $(echo $FILE | grep "No matches")
-	echo $FILE
-	if [ "$ALBUMEXISTS" = "" ]
-		set FILE $(echo $FILE | awk -v home="$HOME/Music/" '{gsub(home, ""); print}')
+	if test -n "$FILE"
+		set ALBUMEXISTS $(echo $FILE | grep "No matches")
 		echo $FILE
-		mpc clear
-		mpc add "$FILE"
-		mpc play
+		if [ "$ALBUMEXISTS" = "" ]
+			set FILE $(echo $FILE | awk -v home="$HOME/Music/" '{gsub(home, ""); print}')
+			echo $FILE
+			mpc clear
+			mpc add "$FILE"
+			mpc play
+		else
+			echo 'No such album!'
+		end
 	else
-		echo 'No such album!'
+		echo "No album selected."
 	end
 else
 	echo 'No command!'
