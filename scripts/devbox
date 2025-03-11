@@ -1,15 +1,18 @@
 #!/usr/bin/env fish
 
-if [ "$argv[1]" = "zig" ]
-    set container "devbox-zig"
-else if [ "$argv[1]" = "julia" ]
-    set container "devbox-julia"
-else
-    echo "Invalid argument."
+if test -z "$argv[1]"
+    echo "Usage: $0 <language>"
     exit 1
 end
 
-set container_name "$container-"(basename (pwd))
+set image "devbox-"$argv[1]
+
+if not podman image exists "$image"
+    echo "Container image $image does not exist."
+    exit 1
+end
+
+set container_name "$image-"(basename (pwd))
 
 if podman ps -a --format '{{.Names}}' | grep -q "^$container_name\$"
 	if podman ps --format '{{.Names}}' | grep -q "^$container_name\$"
@@ -22,7 +25,7 @@ if podman ps -a --format '{{.Names}}' | grep -q "^$container_name\$"
 	end
 else
     echo "Creating and starting a new container: $container_name"
-    podman run -it -d -p 8000:22 -v $(pwd):/home/guest/$(basename $(pwd)):z --userns=keep-id --name $container_name $container
+    podman run -it -d -p 8000:22 -v $(pwd):/home/guest/$(basename $(pwd)):z --userns=keep-id --name $container_name $image
 end
 
 if podman ps --format '{{.Names}}' | grep -q "^$container_name\$"
