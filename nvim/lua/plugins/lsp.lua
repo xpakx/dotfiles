@@ -38,6 +38,7 @@ return {
 					'ts_ls',
 					'wgsl_analyzer',
 					'lua_ls',
+					'tinymist',
                                 },
 
                                 handlers = {
