@@ -34,7 +34,7 @@ return {
 					'pylsp',
 					'rust_analyzer',
 					'gopls',
-					--'ocamllsp',
+					'ocamllsp',
 					'ts_ls',
 					'wgsl_analyzer',
 					'lua_ls',
