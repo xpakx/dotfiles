@@ -1,0 +1,34 @@
+#!/usr/bin/env fish
+
+function albumconv -d "Converts m4a files in a folder to mp3"
+    if test (count $argv) -eq 0
+        echo "Usage: albumconv <directory>"
+        return 1
+    end
+
+    set -l src_dir (string trim -r -c '/' $argv[1])
+    
+    set -l dest_dir "$src_dir MP3"
+
+    if not test -d "$dest_dir"
+        mkdir -p "$dest_dir"
+    end
+
+    for f in "$src_dir"/*.m4a
+        if not test -f "$f"
+            echo "No .m4a files found in $src_dir"
+            break
+        end
+
+        set -l filename (basename "$f")
+        set -l output_name (string replace -r '\.m4a$' '.mp3' "$filename")
+        echo "Converting: $filename ..."
+        ffmpeg -i "$f" -c:a libmp3lame -b:a 320k -vn "$dest_dir/$output_name"
+    end
+
+    echo "Finished! Files saved to: $dest_dir"
+end
+
+
+
+albumconv $argv
